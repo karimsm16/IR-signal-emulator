@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "../IR-signal-emulator"
+		},
+		{
+			"name": "IR signal emulator",
+			"path": "."
+		}
+	],
+	"settings": {}
+}

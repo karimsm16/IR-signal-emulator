@@ -79,6 +79,13 @@ void loop()
     
  if(IRreceiver.decode(&output))
  {
+    if (output.rawlen < 10) 
+    {
+       IRreceiver.resume();
+         return;
+
+    } 
+    
     Serial.println("----------------------");
     Serial.println ("signal received ");
     Serial.println("----------------------");

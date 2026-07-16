@@ -1,18 +1,48 @@
 #include <Arduino.h>
+#include <WiFi.h>
+#include<ArduinoOTA.h> 
 
-// put function declarations here:
-int myFunction(int, int);
 
-void setup() {
-  // put your setup code here, to run once:
-  int result = myFunction(2, 3);
+// wifi credentials //
+const char* networkname = "Infinix SMART 7 HD";  // enter your wifi name
+const char* password = "pjTR@135"; // and here your wifi password //
+
+void setup (){
+
+Serial.begin(115200) ;
+Serial.println ("Booting");
+
+// connect to wifi //
+
+WiFi.begin(networkname,password);
+Serial.print ("connecting ...") ;
+
+while(WiFi.status() !=WL_CONNECTED){
+
+Serial.print("CONNECTION FAILED !!");
+delay(500);
+
+} 
+
+Serial.println("connected ");
+Serial.print("IP Address :");
+Serial.println(WiFi.localIP());
+
+// OTA Hostname
+ArduinoOTA.setHostname("ESP32-OTA"); // this is the adress of your esp32 in the network 
+
+
+// Start OTA service
+    ArduinoOTA.begin();
+
+    Serial.println("OTA Ready");
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
+//  the Loop function 
+
+void loop()
+{
+// This checks continuously for incoming OTA requests.
+    ArduinoOTA.handle();
 }
 
-// put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
-}

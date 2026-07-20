@@ -19,15 +19,16 @@ const uint8_t IR_LED_Pin     = 4;
 const uint8_t Save_Button   = 18;
 const uint8_t Send_Button   = 19;
 const uint8_t Delete_Button = 21;
+const int led = 2 ;
 
 // wifi credentials //
-const char* networkname = "Infinix SMART 7 HD";  // enter your wifi name
-const char* password = "pjTR@135"; // and here your wifi password //
+const char* networkname = " your  WIFI network name";  // enter your wifi name
+const char* password = "network password"; // and here your wifi password //
 
 // create  objects to handle the IR signals 
 
-IRrecv IRreceiver (IR_receiverPin) ; // for receiving 
-IRsend IRtransmitter(IR_LED_Pin); // for transmitting 
+IRrecv IRreceiver (IR_receiverPin) ; // create an object qfor receiving  
+IRsend IRtransmitter(IR_LED_Pin); //  create an object for transmitting 
  
 // create a variable to store the decoded IR signals 
 
@@ -44,6 +45,7 @@ void setup (){
 pinMode(Save_Button, INPUT_PULLUP);
 pinMode(Send_Button, INPUT_PULLUP);
 pinMode(Delete_Button, INPUT_PULLUP);
+pinMode (led, OUTPUT);
 
 Serial.begin(115200) ;
 delay(500);
@@ -56,17 +58,20 @@ Serial.println ("Booting");
 WiFi.begin(networkname,password);
 Serial.print ("connecting ...") ;
 
-while(WiFi.status() !=WL_CONNECTED){
+if(WiFi.status() !=WL_CONNECTED) 
+{
 
 Serial.print("Loading "); // the esp32 still trying to connect to the WIFI
 delay(500);
 
 } 
 
+else {
+
 Serial.println("connected ");
 Serial.print("IP Address :");
 Serial.println(WiFi.localIP());
-
+     }  
 // OTA Hostname
 ArduinoOTA.setHostname("ESP32-OTA"); // name used to identify your esp32 on the local  network 
 
@@ -113,6 +118,9 @@ void loop()
     Serial.println ("signal received ");
     Serial.println("----------------------");
 
+    digitalWrite (led,HIGH);
+    delay(1000);
+    digitalWrite(led,LOW) ;
 
  
    // print protocol , adress, command and raw timings 
@@ -137,6 +145,10 @@ void loop()
     Serial.println("Signal saved.");
     Serial.print("Saved output protocol: ");
     Serial.println(typeToString(output.decode_type));
+    digitalWrite (led,HIGH);
+    delay(500);
+    digitalWrite (led,LOW); 
+    delay(500);
 
     delay(300);
  }
@@ -155,6 +167,10 @@ void loop()
     {
         Serial.println("No signal saved.");
         delay(300);
+         digitalWrite (led,HIGH);
+    delay(1000);
+    digitalWrite (led,LOW); 
+    delay(500);
         return;
     }
 

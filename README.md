@@ -2,7 +2,7 @@
 
 This project is my first step toward understanding infrared communication with the ESP32.
 
-The current goal is simple: receive an IR signal from any remote control, store it, and transmit it again. At the same time, I'm learning how OTA (Over-the-Air) updates work so I can upload new firmware without a cable.
+The current goal is simple: receive an IR signal from any remote control, store it, and transmit it again. At the same time, I'm learning how OTA (Over-the-Air) updates work so I can upload new firmware without connecting a USB cable.
 
 ## Current Features
 
@@ -22,58 +22,27 @@ The current goal is simple: receive an IR signal from any remote control, store 
 * Breadboard
 * Jumper wires
 
-## Bill of Materials (BOM)
-
-Below is a CSV-style BOM you can copy into a file named `BOM.csv` or edit as needed.
-
-```csv
-Item,Part,Quantity,Notes,Approx. Cost (USD)
-1,ESP32 Dev Module,1,Any ESP32 dev board (e.g., ESP32 DevKitC),5-15
-2,IR receiver (SM0038 / TSOP382),1,Receiver module used in this project,0.5-3
-3,IR LED,1,High-brightness IR LED,0.1-1
-4,Push button,3,Momentary push buttons (Save/Send/Delete),0.1-0.5 each
-5,Indicator LED,1,Optional external LED (built-in LED can be used),0.05-0.2
-6,Breadboard,1,For prototyping,3-10
-7,Jumper wires,~10,Male-to-male jumper wires,1-3
-8,Resistor 220Ω,1,Current-limiting resistor for IR LED,0.01-0.2
-9,USB cable,1,For initial programming,1-3
-10,Power supply (5V),1,USB power bank or adapter,5-15
-```
-
-And the same data as a Markdown table for quick reading:
-
-| Item | Part                             | Quantity | Notes                                      | Approx. Cost (USD) |
-|------|----------------------------------|----------|--------------------------------------------|--------------------:|
-| 1    | ESP32 Dev Module                 | 1        | Any ESP32 dev board (e.g., ESP32 DevKitC)  | 5–15               |
-| 2    | IR receiver (SM0038 / TSOP382)   | 1        | Receiver module used in this project       | 0.5–3              |
-| 3    | IR LED                           | 1        | High-brightness IR LED                     | 0.1–1              |
-| 4    | Push button                      | 3        | Momentary push buttons (Save/Send/Delete)  | 0.1–0.5 each       |
-| 5    | Indicator LED                    | 1        | Optional external LED (built-in OK)        | 0.05–0.2           |
-| 6    | Breadboard                       | 1        | For prototyping                            | 3–10               |
-| 7    | Jumper wires                     | ~10      | Male-to-male jumper wires                  | 1–3                |
-| 8    | Resistor 220Ω                    | 1        | Current-limiting resistor for IR LED       | 0.01–0.2           |
-| 9    | USB cable                        | 1        | For initial programming                    | 1–3                |
-| 10   | Power supply (5V)                | 1        | USB power bank or adapter                  | 5–15               |
+See the [Bill of Materials (BOM)](BOM.csv) for a complete list of all components required.
 
 ## the evolution of the project 
 
 ✅ Added FOTA (Firmware Over The Air)
 I integrated the ArduinoOTA library so I can upload firmware to my ESP32 over Wi-Fi instead of connecting a USB cable every time.
 
-I mainly did it because I wanted to try something new. It wasn’t that hard to implement, but understanding what the library actually does internally took much longer than writing the code itself.
+I mainly did it because I wanted to try something new. It wasn't that hard to implement, but understanding what the library actually does internally took much longer than writing the code itself.
 
-While researching, I wrote a lot of notes on paper. I’m planning to turn everything I learn during this project into a few PDF files and upload them to GitHub once the project is finished. Hopefully they'll help others starting out.
+While researching, I wrote a lot of notes on paper. I'm planning to turn everything I learn during this project into a few PDF files and upload them to GitHub once the project is finished. Hopefully they will help others understand OTA updates better!
 
 ✅ Enabled IR Reception
 The receiver started receiving signals… but there was a problem.
 
-The Serial Monitor kept printing random signals with an UNKNOWN protocol even when I wasn’t touching the remote.
+The Serial Monitor kept printing random signals with an UNKNOWN protocol even when I wasn't touching the remote.
 
-After a bit of investigation, I realized my circuit was sitting next to a window. Since sunlight contains infrared radiation, I moved everything into a nearly dark room. Most of the random signals stopped.
+After a bit of investigation, I realized my circuit was sitting next to a window. Since sunlight contains infrared radiation, I moved everything into a nearly dark room. Most of the random signals disappeared immediately.
 
-Unfortunately, the receiver still couldn’t detect my remote.
+Unfortunately, the receiver still couldn't detect my remote.
 
-I couldn’t find the datasheet for my exact IR receiver. The only one I found was for another module with the same name but different dimensions, so after several random attempts I finally figured out the correct wiring and orientation.
+I couldn't find the datasheet for my exact IR receiver. The only one I found was for another module with the same name but different dimensions, so after several random attempts I finally figured it out by trail and error.
 
 That was probably the most satisfying moment of the day.
 
@@ -88,7 +57,7 @@ In the end, I built a simple filter:
 
 Ignore every UNKNOWN protocol.
 Ignore signals whose raw timing is below a chosen threshold.
-If you’re interested in this topic, let me know. I wrote pages of notes while researching it, and I’d like to convert them into PDFs and upload them with the project.
+If you're interested in this topic, let me know. I wrote pages of notes while researching it, and I'd like to convert them into PDFs and upload them with the project.
 
 ✅ Enabled IR Transmission
 Next, I added:
@@ -106,29 +75,29 @@ The first bug was that if Wi-Fi failed to connect, the rest of my code never exe
 
 The second one took me much longer to understand.
 
-The received signal wasn’t being saved correctly.
+The received signal wasn't being saved correctly.
 
-After several hours of debugging, I discovered that the problem wasn’t the receiver—it was my program logic. Since the loop() function runs thousands of times every second, the variable holding the last valid signal kept getting overwritten.
+After several hours of debugging, I discovered that the problem wasn't the receiver—it was my program logic. Since the loop() function runs thousands of times every second, the variable holding the received data was changing constantly.
 
-The solution was simply to keep a copy of the last valid signal instead of relying on the receiver’s working variable.
+The solution was simply to keep a copy of the last valid signal instead of relying on the receiver's working variable.
 
 * Added FOTA (Firmware Over The Air)
 I integrated the ArduinoOTA library so I can upload firmware to my ESP32 over Wi-Fi instead of connecting a USB cable every time.
 
-I mainly did it because I wanted to try something new. It wasn’t that hard to implement, but understanding what the library actually does internally took much longer than writing the code itself.
+I mainly did it because I wanted to try something new. It wasn't that hard to implement, but understanding what the library actually does internally took much longer than writing the code itself.
 
-While researching, I wrote a lot of notes on paper. I’m planning to turn everything I learn during this project into a few PDF files and upload them to GitHub once the project is finished. Hopefully they'll help others starting out.
+While researching, I wrote a lot of notes on paper. I'm planning to turn everything I learn during this project into a few PDF files and upload them to GitHub once the project is finished. Hopefully they will help others understand OTA updates better!
 
 * Enabled IR Reception
 The receiver started receiving signals… but there was a problem.
 
-The Serial Monitor kept printing random signals with an UNKNOWN protocol even when I wasn’t touching the remote.
+The Serial Monitor kept printing random signals with an UNKNOWN protocol even when I wasn't touching the remote.
 
-After a bit of investigation, I realized my circuit was sitting next to a window. Since sunlight contains infrared radiation, I moved everything into a nearly dark room. Most of the random signals stopped.
+After a bit of investigation, I realized my circuit was sitting next to a window. Since sunlight contains infrared radiation, I moved everything into a nearly dark room. Most of the random signals disappeared immediately.
 
-Unfortunately, the receiver still couldn’t detect my remote.
+Unfortunately, the receiver still couldn't detect my remote.
 
-I couldn’t find the datasheet for my exact IR receiver. The only one I found was for another module with the same name but different dimensions, so after several random attempts I finally figured out the correct wiring and orientation.
+I couldn't find the datasheet for my exact IR receiver. The only one I found was for another module with the same name but different dimensions, so after several random attempts I finally figured it out by trial and error.
 
 That was probably the most satisfying moment of the day.
 
@@ -142,7 +111,7 @@ That led me to spend a couple of hours learning how the IRremoteESP8266 library 
 In the end, I built a simple filter:
 
 Ignore every UNKNOWN protocol.
-Ignore signals whose raw timing is below a chosen threshold, and to select the appropriate threshold I took a look on supported protocols in this library , and I found that the IR noise has typical timing much shorter than real remote signals, so filtering them by length worked well.
+Ignore signals whose raw timing is below a chosen threshold, and to select the appropriate threshold I took a look on supported protocols in this library , and I found that the IR noise has typical code length around 4-6 bits.
 
 ##  Common Protocols & Code Lengths
 
@@ -161,8 +130,6 @@ Ignore signals whose raw timing is below a chosen threshold, and to select the a
 | Denon          | 15 bits                  | Audio equipment remotes. |
 | Whirlpool/Carrier/Daikin/Fujitsu/Hitachi (A/C) | Variable (48–128 bits) | A/C protocols transmit full state info. |
 
-
-
 # Enabled IR Transmission
 Next, I added:
 
@@ -178,12 +145,11 @@ The first bug was that if Wi-Fi failed to connect, the rest of my code never exe
 
 The second one took me much longer to understand.
 
-The received signal wasn’t being saved correctly.
+The received signal wasn't being saved correctly.
 
-After several hours of debugging, I discovered that the problem wasn’t the receiver—it was my program logic. Since the loop() function runs thousands of times every second, the variable holding the last valid signal kept getting overwritten.
+After several hours of debugging, I discovered that the problem wasn't the receiver—it was my program logic. Since the loop() function runs thousands of times every second, the variable holding the received data was changing constantly.
 
-The solution was simply to keep a copy of the last valid signal instead of relying on the receiver’s working variable.
-
+The solution was simply to keep a copy of the last valid signal instead of relying on the receiver's working variable.
 
 # DEMO video :
 
